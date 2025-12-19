@@ -1,14 +1,25 @@
 'use client'
 
 import { useState, FormEvent } from 'react'
+import { useApiKey } from '../hooks/useApiKey'
 import { useChat } from '../hooks/useChat'
 
 export function Chat() {
-  const { messages, isLoading, sendMessage, apiKey, setApiKey, clearApiKey } = useChat()
+  const { apiKey, isValidating, validateAndSetApiKey, clearApiKey } = useApiKey()
+  const { messages, isLoading, sendMessage } = useChat(apiKey)
   const [input, setInput] = useState('')
   const [keyInput, setKeyInput] = useState('')
+  const [keyError, setKeyError] = useState('')
 
   if (!apiKey) {
+    const handleKeySubmit = async (e: FormEvent) => {
+      e.preventDefault()
+      if (!keyInput.trim()) return
+      setKeyError('')
+      const isValid = await validateAndSetApiKey(keyInput.trim())
+      if (!isValid) setKeyError('Clé API invalide')
+    }
+
     return (
       <div className="flex flex-col items-center justify-center h-screen p-4 bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-950">
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-white/20 animate-message-in">
@@ -17,26 +28,22 @@ export function Chat() {
           </div>
           <h1 className="text-2xl font-bold mb-2 text-center bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Configuration</h1>
           <p className="text-gray-500 dark:text-gray-400 mb-6 text-center">Entrez votre clé API Mistral</p>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault()
-              if (keyInput.trim()) setApiKey(keyInput.trim())
-            }}
-            className="flex flex-col gap-3"
-          >
+          <form onSubmit={handleKeySubmit} className="flex flex-col gap-3">
             <input
               type="password"
               value={keyInput}
               onChange={(e) => setKeyInput(e.target.value)}
-              placeholder="sk-..."
-              className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white/50 dark:bg-gray-700/50 transition-all duration-200"
+              placeholder="Votre clé API..."
+              disabled={isValidating}
+              className="px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white/50 dark:bg-gray-700/50 transition-all duration-200 disabled:opacity-50"
             />
+            {keyError && <p className="text-red-500 text-sm text-center">{keyError}</p>}
             <button
               type="submit"
-              disabled={!keyInput.trim()}
+              disabled={!keyInput.trim() || isValidating}
               className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl hover:from-indigo-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
             >
-              Valider
+              {isValidating ? 'Validation...' : 'Valider'}
             </button>
           </form>
           <p className="text-gray-400 dark:text-gray-500 text-sm mt-6 text-center">

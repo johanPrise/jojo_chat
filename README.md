@@ -1,6 +1,6 @@
-# Johan Mistral Chat
+# Jojo Mistral Chat
 
-Application de chat avec l'API Mistral (modèle open-mixtral-8x22b) en streaming.
+A chat application using the Mistral API (open-mixtral-8x22b model) with real-time streaming.
 
 ## Installation
 
@@ -8,53 +8,57 @@ Application de chat avec l'API Mistral (modèle open-mixtral-8x22b) en streaming
 npm install
 ```
 
-## Lancement
+## Getting Started
 
 ```bash
 npm run dev
 ```
 
-Ouvrir http://localhost:3000
+Open [http://localhost:3000](http://localhost:3000)
 
-## Utilisation
+## Usage
 
-1. Obtenir une clé API gratuite sur [console.mistral.ai](https://console.mistral.ai)
-2. Entrer la clé dans l'interface au premier lancement
-3. La clé est sauvegardée localement (localStorage)
+1. Get a free API key at [console.mistral.ai](https://console.mistral.ai)
+2. Enter the key in the interface on first launch
+3. The key is saved locally (localStorage)
 
-## Structure
+## Project Structure
 
 ```
 app/
-├── page.tsx              # Monte le composant Chat
-├── globals.css           # Styles + animations custom
+├── page.tsx              # Mounts the Chat component
+├── globals.css           # Styles + custom animations
 ├── components/
-│   └── Chat.tsx          # UI complète (config + chat)
+│   └── Chat.tsx          # Complete UI (config + chat)
 ├── hooks/
-│   └── useChat.ts        # Logique : messages, streaming, API key
-└── api/chat/
-    └── route.ts          # Proxy vers Mistral (streaming SSE)
+│   ├── useChat.ts        # Logic: messages, streaming
+│   └── useApiKey.ts      # API key management & validation
+└── api/
+    ├── chat/
+    │   └── route.ts      # Proxy to Mistral (SSE streaming)
+    └── validate-key/
+        └── route.ts      # API key validation endpoint
 ```
 
-## Choix techniques
+## Technical Choices
 
-- **Streaming** : réponses affichées progressivement (effet machine à écrire)
-- **Clé API côté client** : stockée en localStorage, envoyée à chaque requête
-- **Buffer SSE** : gestion des chunks incomplets pour éviter les coupures
-- **Fetch natif** : pas de dépendance externe pour le chat
-- **Tailwind** : styling avec glassmorphism et gradients
+- **Streaming**: Responses displayed progressively (typewriter effect)
+- **Client-side API key**: Stored in localStorage, sent with each request
+- **SSE Buffer**: Handles incomplete chunks to avoid cutoffs
+- **Native Fetch**: No external dependencies for chat functionality
+- **Tailwind CSS**: Styling with glassmorphism and gradients
 
 ## Design
 
-- Gradients indigo/purple
+- Indigo/purple gradients
 - Glassmorphism (backdrop-blur)
-- Animations d'entrée des messages
-- Indicateur de frappe animé (3 points)
-- Support dark mode
+- Message entry animations
+- Animated typing indicator (3 dots)
+- Dark mode support
 
-## Limites volontaires
+## Intentional Limitations
 
-- Mono-conversation (pas d'historique)
-- Pas d'authentification serveur
-- Pas de persistance des conversations
-- Messages non formatés (pas de markdown)
+- Single conversation (no history)
+- No server-side authentication
+- No conversation persistence
+- Messages not formatted (no markdown parsing)
